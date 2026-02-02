@@ -15,8 +15,6 @@ dependencies = [
     "Pillow==10.0.0",
     "matplotlib==3.7.2",
     "pydicom==2.4.2",
-    "torch==2.0.1",
-    "torchvision==0.15.2",
     "mlflow==2.7.1",
     "tqdm==4.65.0",
     "lpips==0.1.4",
@@ -26,6 +24,7 @@ dependencies = [
     "fastremap==1.14.0",
     "lungmask==0.2.20",
     "python-gdcm==3.0.24.1",
+    "nibabel==5.2.1",
 ]
 
 [tool.poetry]
