@@ -3,3 +3,6 @@ __pycache__/
 .DS_Store
 notebooks/
 *.egg-info/
+*.pth
+*.state
+*.hdf5
