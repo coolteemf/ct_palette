@@ -67,8 +67,11 @@
     },
 
     "model": {
-        "which_model": { 
-            "name": ["ctpalette.models.model", "Palette"],
+        "which_model": {
+            "name": [
+                "ctpalette.models.model",
+                "Palette"
+            ],
             "args": {
                 "sample_num": 8,
                 "task": "inpainting",
@@ -78,13 +81,19 @@
                     "ema_decay": 0.9999
                 },
                 "optimizers": [
-                    { "lr": 5e-5, "weight_decay": 0}
+                    {
+                        "lr": 5e-05,
+                        "weight_decay": 0
+                    }
                 ]
             }
-        }, 
+        },
         "which_networks": [
             {
-                "name": ["ctpalette.models.network", "Network"], 
+                "name": [
+                    "ctpalette.models.network",
+                    "Network"
+                ],
                 "args": {
                     "init_type": "kaiming",
                     "module_name": "guided_diffusion",
@@ -112,16 +121,18 @@
                         "train": {
                             "schedule": "linear",
                             "n_timestep": 2000,
-                            "linear_start": 1e-6,
+                            "linear_start": 1e-06,
                             "linear_end": 0.01
                         },
                         "test": {
                             "schedule": "linear",
                             "n_timestep": 1000,
-                            "linear_start": 1e-4,
+                            "linear_start": 0.0001,
                             "linear_end": 0.09
                         }
-                    }
+                    },
+                    "tv_loss": false,
+                    "tv_loss_coeff": 0.001
                 }
             }
         ],
@@ -130,7 +141,8 @@
         ],
         "which_metrics": [
             "mae",
-            "lpips_fn"
+            "lpips_fn",
+            "rmse_muscle_sat_area_diff_untrunc_pred"
         ]
     },
 

@@ -1,6 +1,6 @@
 import os
 
-MAIN_DATA_PATH = "/Users/michelleespranita/Documents/Master Thesis/MICCAI/ct_palette_test_data" # FILL THIS WITH YOURS!!!
+MAIN_DATA_PATH = "./data" # FILL THIS WITH YOURS!!!
 
 ############################### Data paths ##############################
 
@@ -38,4 +38,4 @@ model_dir = "./models"
 
 body_bb_model_path = os.path.join(model_dir, "body_bb_detector/body_bb.pth") # Path to the trained body bounding box detector for inference
 image_outpainting_model_path = os.path.join(model_dir, "image_outpainting_model/image_outpainting_model.pth") # Path to the trained image outpainting model for inference
-seg_model_path = "" # Path to the trained body composition segmentation model used for multiple inference
+seg_model_path = os.path.join(model_dir, "seg_model/segmentation_unet_d5_i16_c1.hdf5") # Path to the trained body composition segmentation model used for multiple inference
