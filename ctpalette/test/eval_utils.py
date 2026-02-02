@@ -5,6 +5,7 @@ from collections import OrderedDict
 from typing import Union, Dict, Any, List, Tuple
 
 import numpy as np
+import nibabel as nib
 import pydicom
 import matplotlib.pyplot as plt
 from matplotlib import colors
@@ -475,14 +476,16 @@ def extend_fov(ct_slice: torch.Tensor, body_mask: np.ndarray, pixel_spacing: flo
 
     return extend_img, extend_body_mask, ext_ratio, new_pixel_spacing
 
-def run_CT_Palette(dcm: pydicom.dataset.FileDataset, body_bb_model, outpainting_model,
+def run_CT_Palette(data: Union[pydicom.dataset.FileDataset, np.ndarray], body_bb_model, outpainting_model,
+                   pixel_spacing: float = None,
                    center: bool = True, multiple_inference: bool = False, **multiple_inference_kwargs) -> Tuple[torch.Tensor, float]:
     """
     Runs CT-Palette (body bounding box detector + image outpainting model) with single/multiple inference.
     Args:
-        - dcm: The dcm whose FOV is to be extended
+        - data: The dcm or HU numpy array whose FOV is to be extended
         - body_bb_model: The body bounding box model
         - outpainting_model: The image outpainting model
+        - pixel_spacing (float): The pixel spacing of the image. Required if data is a numpy array.
         - center (bool): Whether the body should be centered when doing FOV extension
         - multiple_inference (bool): If True, use multiple inference for outpainting
         - multiple_inference_kwargs: Arguments for multiple inference (seg_model, num_generated_samples, mode, outlier_detection)
@@ -491,7 +494,13 @@ def run_CT_Palette(dcm: pydicom.dataset.FileDataset, body_bb_model, outpainting_
         - new_pixel_spacing (float): The pixel spacing after FOV extension
     """
 
-    dcm_img = data_utils.transform_dcm_to_HU(dcm)
+    if isinstance(data, pydicom.dataset.FileDataset):
+        dcm_img = data_utils.transform_dcm_to_HU(data)
+        pixel_spacing = data.PixelSpacing[0]
+    else:
+        dcm_img = data
+        if pixel_spacing is None:
+            raise ValueError("pixel_spacing must be provided if data is a numpy array")
 
     # Create body mask for truncated CT slice
     try:
@@ -525,7 +534,7 @@ def run_CT_Palette(dcm: pydicom.dataset.FileDataset, body_bb_model, outpainting_
     # Extend truncated CT slice and body mask before outpainting
     extend_img, extend_body_mask, ext_ratio, new_pixel_spacing = extend_fov(ct_slice=input_slice,
                                                                             body_mask=body_mask,
-                                                                            pixel_spacing=dcm.PixelSpacing[0],
+                                                                            pixel_spacing=pixel_spacing,
                                                                             body_bb=body_bb_pred,
                                                                             center=center)
 
@@ -770,7 +779,7 @@ def plot_truncated_and_outpainted_slices(rgb_trunc_slice, rgb_outpainted_slice, 
     axes[0].set_title(title1, fontsize=20)
     axes[0].axis("off")
     
-    axes[1].imshow(rgb_outpainted_slice, cmap="gray")
+    axes[1].imshow(rgb_outpainted_slice.cpu(), cmap="gray")
     axes[1].set_title(title2, fontsize=20)
     axes[1].axis("off")
     
